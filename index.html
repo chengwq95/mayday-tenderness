@@ -1,0 +1,1466 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#081316" />
+  <meta name="description" content="《温柔》——一场关于靠近、克制与放手的文字沉浸体验。" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+  <title>温柔 · 就让你自由</title>
+  <style>
+    :root {
+      --night: #081316;
+      --deep: #102326;
+      --pine: #1d3532;
+      --mist: #e8eee6;
+      --muted: #aebdb7;
+      --sun: #efc37a;
+      --afterglow: #d98b6f;
+      --sky: #91bdc0;
+      --hairline: rgba(232, 238, 230, 0.18);
+      --display: "Songti SC", "STSong", "Noto Serif CJK SC", serif;
+      --body: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --mono: "SFMono-Regular", "Roboto Mono", monospace;
+      --page-x: clamp(1.4rem, 5.5vw, 6.5rem);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--night);
+    }
+
+    body {
+      margin: 0;
+      color: var(--mist);
+      background:
+        radial-gradient(circle at 78% 8%, rgba(239, 195, 122, 0.08), transparent 28rem),
+        var(--night);
+      font-family: var(--body);
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0.11;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+    }
+
+    ::selection {
+      color: var(--night);
+      background: var(--sun);
+    }
+
+    a, button { color: inherit; }
+
+    button { font: inherit; }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 1px solid var(--sun);
+      outline-offset: 6px;
+    }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -5rem;
+      z-index: 100;
+      padding: 0.8rem 1rem;
+      color: var(--night);
+      background: var(--mist);
+      text-decoration: none;
+      transition: top 0.25s ease;
+    }
+
+    .skip-link:focus { top: 1rem; }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem var(--page-x);
+      mix-blend-mode: difference;
+      pointer-events: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font: 500 0.68rem/1 var(--mono);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      width: 1.8rem;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .sound-toggle {
+      --bar-one: 0.65rem;
+      --bar-two: 1rem;
+      --bar-three: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      border: 0;
+      padding: 0.5rem;
+      background: transparent;
+      cursor: pointer;
+      pointer-events: auto;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+    }
+
+    .sound-meter {
+      position: relative;
+      width: 1.8rem;
+      height: 1rem;
+    }
+
+    .sound-meter i {
+      position: absolute;
+      right: 0;
+      height: 1px;
+      background: currentColor;
+      border-radius: 100%;
+      transform-origin: right;
+      transition: width 0.16s linear, transform 0.4s ease;
+    }
+
+    .sound-meter i:nth-child(1) { top: 0.1rem; width: var(--bar-one); }
+    .sound-meter i:nth-child(2) { top: 0.48rem; width: var(--bar-two); }
+    .sound-meter i:nth-child(3) { top: 0.86rem; width: var(--bar-three); }
+    .sound-toggle[aria-pressed="true"] .sound-meter i:nth-child(1) { transform: translateX(-0.22rem); }
+    .sound-toggle[aria-pressed="true"] .sound-meter i:nth-child(3) { transform: translateX(-0.42rem); }
+
+    .scene-live {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .chapter-nav {
+      position: fixed;
+      z-index: 25;
+      top: 50%;
+      right: clamp(0.65rem, 2vw, 1.8rem);
+      transform: translateY(-50%);
+    }
+
+    .chapter-nav::before,
+    .chapter-nav-progress {
+      content: "";
+      position: absolute;
+      top: 1rem;
+      bottom: 1rem;
+      right: 0.98rem;
+      width: 1px;
+    }
+
+    .chapter-nav::before { background: rgba(232, 238, 230, 0.15); }
+
+    .chapter-nav-progress {
+      bottom: auto;
+      height: var(--page-progress, 0%);
+      background: var(--sun);
+      box-shadow: 0 0 12px rgba(239, 195, 122, 0.55);
+      transition: height 0.12s linear;
+    }
+
+    .chapter-nav-list {
+      position: relative;
+      display: grid;
+      gap: clamp(0.2rem, 0.8vh, 0.5rem);
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .chapter-nav a {
+      position: relative;
+      display: grid;
+      width: 2rem;
+      height: 2rem;
+      place-items: center;
+      color: rgba(232, 238, 230, 0.35);
+      font: 500 0.52rem/1 var(--mono);
+      text-decoration: none;
+    }
+
+    .chapter-nav a::before {
+      content: "";
+      position: absolute;
+      right: 0.78rem;
+      width: 0.42rem;
+      height: 0.42rem;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      background: var(--night);
+      transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+    }
+
+    .chapter-nav-text {
+      position: absolute;
+      right: 2.6rem;
+      padding: 0.4rem 0.55rem;
+      color: var(--mist);
+      background: rgba(8, 19, 22, 0.78);
+      border: 1px solid rgba(232, 238, 230, 0.12);
+      opacity: 0;
+      transform: translateX(0.4rem);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      white-space: nowrap;
+      pointer-events: none;
+      letter-spacing: 0.12em;
+    }
+
+    .chapter-nav a:hover .chapter-nav-text,
+    .chapter-nav a:focus-visible .chapter-nav-text {
+      opacity: 1;
+      transform: none;
+    }
+
+    .chapter-nav a[aria-current="true"] {
+      color: var(--sun);
+    }
+
+    .chapter-nav a[aria-current="true"]::before {
+      background: var(--sun);
+      transform: scale(1.35);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      align-items: end;
+      padding: 7rem var(--page-x) 3.5rem;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -2;
+      width: min(52rem, 88vw);
+      aspect-ratio: 1;
+      top: -38%;
+      right: -12%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249, 208, 135, 0.35) 0%, rgba(239, 195, 122, 0.11) 30%, transparent 70%);
+      filter: blur(1px);
+      animation: breathe 8s ease-in-out infinite alternate;
+    }
+
+    #word-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0;
+      animation: canvasIn 2s 0.3s ease forwards;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(15rem, 0.75fr) minmax(17rem, 1.25fr);
+      gap: clamp(2rem, 8vw, 9rem);
+      align-items: end;
+      width: 100%;
+    }
+
+    .hero-meta { padding-bottom: 0.7rem; }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin: 0 0 1.8rem;
+      color: var(--sun);
+      font: 500 0.66rem/1.4 var(--mono);
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 2.5rem;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .intro {
+      max-width: 26rem;
+      margin: 0;
+      color: var(--muted);
+      font-family: var(--display);
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      line-height: 2;
+      letter-spacing: 0.12em;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(5.8rem, 18vw, 16rem);
+      font-weight: 400;
+      line-height: 0.72;
+      letter-spacing: -0.09em;
+      text-align: right;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(232, 238, 230, 0.22);
+      user-select: none;
+    }
+
+    .hero-title span {
+      display: inline-block;
+      transform: translateY(0.12em);
+      animation: titleRise 1.5s cubic-bezier(.16,1,.3,1) forwards;
+    }
+
+    .hero-title span:last-child { animation-delay: 0.12s; }
+
+    .scroll-cue {
+      position: absolute;
+      left: var(--page-x);
+      bottom: 1.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: rgba(232, 238, 230, 0.38);
+      font: 500 0.58rem/1 var(--mono);
+      letter-spacing: 0.18em;
+    }
+
+    .scroll-cue i {
+      display: block;
+      width: 2.5rem;
+      height: 1px;
+      background: currentColor;
+      transform-origin: left;
+      animation: cue 2.2s ease-in-out infinite;
+    }
+
+    main { position: relative; }
+
+    .chapter {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      align-items: center;
+      padding: clamp(7rem, 14vh, 12rem) var(--page-x);
+      overflow: hidden;
+    }
+
+    .chapter-label {
+      position: absolute;
+      top: 4rem;
+      left: var(--page-x);
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      color: rgba(232, 238, 230, 0.44);
+      font: 500 0.62rem/1 var(--mono);
+      letter-spacing: 0.18em;
+    }
+
+    .chapter-label b {
+      color: var(--sun);
+      font-size: 1.15rem;
+      font-weight: 400;
+    }
+
+    .verse-grid {
+      display: grid;
+      grid-template-columns: minmax(13rem, 0.8fr) minmax(20rem, 1.2fr);
+      gap: clamp(3rem, 10vw, 11rem);
+      align-items: center;
+      max-width: 78rem;
+      margin-inline: auto;
+    }
+
+    .sun-window {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      border: 1px solid var(--hairline);
+      background: linear-gradient(155deg, rgba(239, 195, 122, 0.19), transparent 58%);
+    }
+
+    .sun-window::before {
+      content: "";
+      position: absolute;
+      width: 78%;
+      aspect-ratio: 1;
+      left: 11%;
+      top: 12%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 42% 42%, #f4d8a5, var(--sun) 38%, rgba(217, 139, 111, 0.4) 66%, transparent 67%);
+      filter: blur(0.3px) drop-shadow(0 0 var(--sun-glow, 0rem) rgba(239, 195, 122, 0.65));
+      transform: translateY(var(--sun-shift, 0));
+      transition: transform 0.2s linear, filter 0.18s ease;
+    }
+
+    .sun-window::after {
+      content: "WIND / 17:42";
+      position: absolute;
+      left: 1rem;
+      bottom: 1rem;
+      color: var(--night);
+      font: 600 0.58rem/1 var(--mono);
+      letter-spacing: 0.16em;
+    }
+
+    .sun-glyph {
+      position: absolute;
+      z-index: 2;
+      right: -0.02em;
+      bottom: -0.22em;
+      color: rgba(232, 238, 230, 0.79);
+      font-family: var(--display);
+      font-size: clamp(9rem, 22vw, 18rem);
+      font-weight: 400;
+      line-height: 1;
+      mix-blend-mode: overlay;
+    }
+
+    .lyrics {
+      display: grid;
+      gap: 1.2rem;
+    }
+
+    .lyrics p {
+      margin: 0;
+      color: rgba(232, 238, 230, 0.48);
+      font-family: var(--display);
+      font-size: clamp(1.2rem, 2.4vw, 2rem);
+      line-height: 1.8;
+      letter-spacing: 0.08em;
+      transition: color 0.9s ease, transform 0.9s cubic-bezier(.16,1,.3,1), opacity 0.9s ease;
+      transform: translateY(1.6rem);
+      opacity: 0;
+    }
+
+    .lyrics p.is-visible {
+      color: rgba(232, 238, 230, 0.84);
+      transform: none;
+      opacity: 1;
+    }
+
+    .lyrics p:nth-child(2) { transition-delay: 0.12s; }
+    .lyrics p:nth-child(3) { transition-delay: 0.24s; }
+    .lyrics p:nth-child(4) { transition-delay: 0.36s; }
+
+    .lyrics em {
+      color: var(--sun);
+      font-style: normal;
+    }
+
+    .eyes {
+      min-height: 115svh;
+      background:
+        linear-gradient(180deg, transparent, rgba(145, 189, 192, 0.06) 42%, transparent),
+        var(--night);
+    }
+
+    .eyes-orbit {
+      position: absolute;
+      width: min(64vw, 55rem);
+      aspect-ratio: 1.85;
+      top: 50%;
+      left: 50%;
+      border: 1px solid rgba(145, 189, 192, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-7deg);
+    }
+
+    .eyes-orbit::before {
+      content: "";
+      position: absolute;
+      width: 24%;
+      aspect-ratio: 1;
+      left: 38%;
+      top: 7%;
+      border: 1px solid rgba(232, 238, 230, 0.25);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232, 238, 230, 0.12), transparent 68%);
+      box-shadow: 0 0 4rem rgba(145, 189, 192, 0.08);
+    }
+
+    .eyes-copy {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 62rem);
+      margin: auto;
+      text-align: center;
+    }
+
+    .eyes-copy p {
+      margin: 0.8rem 0;
+      font-family: var(--display);
+      font-size: clamp(1.3rem, 3vw, 2.75rem);
+      line-height: 1.6;
+      letter-spacing: 0.1em;
+    }
+
+    .eyes-copy .small {
+      margin-top: 4rem;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.7vw, 1.35rem);
+    }
+
+    .eyes-copy strong {
+      display: inline-block;
+      color: var(--sun);
+      font-weight: 400;
+      background: linear-gradient(90deg, var(--sun), var(--afterglow));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      min-height: 145svh;
+      align-items: start;
+      padding-top: 20vh;
+      background: linear-gradient(180deg, var(--night), #0d1c20 55%, var(--night));
+    }
+
+    .question-stack {
+      width: min(100%, 90rem);
+      margin: 0 auto;
+    }
+
+    .question-line {
+      position: relative;
+      margin: 0;
+      padding: 0.2em 0;
+      color: rgba(232, 238, 230, 0.11);
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 7.5vw, 7.6rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .question-line span {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--reveal, 0%);
+      overflow: hidden;
+      white-space: nowrap;
+      color: var(--mist);
+      border-right: 1px solid var(--sun);
+    }
+
+    .question-answer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 8rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--hairline);
+      color: var(--muted);
+      font-family: var(--display);
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+      line-height: 2;
+      letter-spacing: 0.08em;
+    }
+
+    .question-answer p { margin: 0; }
+    .question-answer p:last-child { text-align: right; }
+
+    .alley {
+      background: linear-gradient(180deg, var(--night), #111c1d 76%, #182727);
+    }
+
+    .alley-path {
+      position: absolute;
+      inset: 10% 0 0 50%;
+      width: min(42vw, 34rem);
+      background: linear-gradient(180deg, transparent, rgba(232, 238, 230, 0.045));
+      clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+      transform: translateX(-50%);
+    }
+
+    .alley-path::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: calc(50% - 0.3rem);
+      width: 0.6rem;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--sun);
+      box-shadow: 0 0 2.5rem 0.9rem rgba(239, 195, 122, 0.18);
+    }
+
+    .alley-content {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 70rem);
+      margin: 0 auto;
+    }
+
+    .alley .lyrics { width: min(100%, 46rem); }
+
+    .dream-note {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: min(34vw, 20rem);
+      color: rgba(232, 238, 230, 0.22);
+      font-family: var(--display);
+      font-size: clamp(4rem, 10vw, 9rem);
+      line-height: 0.85;
+      text-align: right;
+      writing-mode: vertical-rl;
+      letter-spacing: -0.1em;
+    }
+
+    .freedom-stage {
+      position: relative;
+      height: 420svh;
+      background: #182727;
+    }
+
+    .freedom-sticky {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 55%, rgba(145, 189, 192, 0.16), transparent 40%),
+        linear-gradient(180deg, #182727, #223837);
+    }
+
+    .freedom-tide {
+      position: absolute;
+      inset: auto -10% 13% -10%;
+      height: 18%;
+      opacity: var(--tide-opacity, 0.08);
+      pointer-events: none;
+      transform: translateY(var(--tide-shift, 0rem));
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .freedom-tide::before,
+    .freedom-tide::after {
+      content: "";
+      position: absolute;
+      inset: 42% 0 auto;
+      height: 1px;
+      background: repeating-radial-gradient(ellipse at 50% 100%, transparent 0 8%, rgba(145, 189, 192, 0.65) 8.4% 8.8%, transparent 9.2% 16%);
+      background-size: 18rem 3rem;
+      animation: tideDrift 13s linear infinite;
+    }
+
+    .freedom-tide::after {
+      top: 64%;
+      opacity: 0.5;
+      animation-direction: reverse;
+      animation-duration: 18s;
+    }
+
+    .freedom-kicker {
+      position: absolute;
+      top: 14%;
+      left: 50%;
+      color: rgba(232, 238, 230, 0.48);
+      font: 500 0.63rem/1 var(--mono);
+      letter-spacing: 0.28em;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    .freedom-word {
+      position: relative;
+      margin: 0;
+      color: var(--mist);
+      font-family: var(--display);
+      font-size: clamp(5.5rem, 20vw, 18rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: var(--freedom-space, -0.08em);
+      transform: scale(var(--freedom-scale, 1));
+      opacity: var(--freedom-opacity, 1);
+      white-space: nowrap;
+      will-change: letter-spacing, transform, opacity;
+    }
+
+    .freedom-word::before,
+    .freedom-word::after {
+      content: "自由";
+      position: absolute;
+      inset: 0;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(232, 238, 230, 0.13);
+      transform: translateX(var(--echo-x, 0));
+    }
+
+    .freedom-word::before { --echo-x: -18vw; }
+    .freedom-word::after { --echo-x: 18vw; }
+
+    .freedom-lines {
+      position: absolute;
+      left: var(--page-x);
+      right: var(--page-x);
+      bottom: 9%;
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+      color: rgba(232, 238, 230, 0.52);
+      font-family: var(--display);
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      line-height: 1.8;
+      letter-spacing: 0.1em;
+    }
+
+    .freedom-lines p { margin: 0; }
+    .freedom-lines p:last-child { text-align: right; }
+
+    .finale {
+      min-height: 200svh;
+      padding-top: 18vh;
+      padding-bottom: 12vh;
+      background:
+        linear-gradient(180deg, #78918c, #a9bcb7 44%, #d9dfd8 100%);
+      color: var(--night);
+    }
+
+    .finale .chapter-label { color: rgba(8, 19, 22, 0.48); }
+    .finale .chapter-label b { color: #8b503e; }
+
+    .finale-wrap {
+      width: min(100%, 70rem);
+      margin: auto;
+    }
+
+    .finale .lyrics p,
+    .finale .lyrics p.is-visible {
+      color: rgba(8, 19, 22, 0.72);
+    }
+
+    .finale .lyrics em { color: #8b503e; }
+
+    .final-chorus {
+      margin: 22vh 0 0;
+      font-family: var(--display);
+      text-align: center;
+    }
+
+    .final-chorus p {
+      margin: 0;
+      font-size: clamp(1rem, 2.2vw, 1.6rem);
+      line-height: 2;
+      letter-spacing: 0.14em;
+    }
+
+    .final-chorus .last-word {
+      margin: 0.4em 0 0;
+      font-size: clamp(7rem, 25vw, 21rem);
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -0.1em;
+    }
+
+    .final-chorus .release {
+      margin-top: 5rem;
+      color: rgba(8, 19, 22, 0.58);
+      font-size: clamp(1.1rem, 3vw, 2rem);
+    }
+
+    .credit {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      margin-top: 26vh;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(8, 19, 22, 0.25);
+      color: rgba(8, 19, 22, 0.55);
+      font: 500 0.62rem/1.7 var(--mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .credit p { margin: 0; }
+    .credit .back-top { text-decoration: none; }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(2.5rem);
+      transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.16,1,.3,1);
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @keyframes breathe {
+      to { transform: translate(-2vw, 3vh) scale(1.06); opacity: 0.72; }
+    }
+
+    @keyframes canvasIn { to { opacity: 1; } }
+
+    @keyframes titleRise {
+      from { opacity: 0; transform: translateY(0.35em); }
+      to { opacity: 1; transform: translateY(0.12em); }
+    }
+
+    @keyframes cue {
+      0%, 100% { transform: scaleX(0.4); opacity: 0.35; }
+      50% { transform: scaleX(1); opacity: 1; }
+    }
+
+    @keyframes tideDrift {
+      to { background-position-x: 18rem; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar { padding-top: 1rem; }
+      .chapter-nav {
+        top: auto;
+        right: 50%;
+        bottom: max(0.8rem, env(safe-area-inset-bottom));
+        padding: 0.25rem 0.4rem;
+        border: 1px solid rgba(232, 238, 230, 0.12);
+        border-radius: 2rem;
+        background: rgba(8, 19, 22, 0.66);
+        backdrop-filter: blur(10px);
+        transform: translateX(50%);
+      }
+      .chapter-nav::before,
+      .chapter-nav-progress { display: none; }
+      .chapter-nav-list { display: flex; gap: 0; }
+      .chapter-nav a { width: 2rem; height: 2rem; }
+      .chapter-nav a::before { right: auto; width: 0.34rem; height: 0.34rem; }
+      .chapter-nav-text { display: none; }
+      .hero { padding-bottom: 5rem; }
+      .scroll-cue { bottom: 4.4rem; }
+      .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-meta { order: 2; }
+      .hero-title { order: 1; font-size: clamp(6rem, 34vw, 11rem); }
+      .intro { max-width: 19rem; font-size: 0.95rem; }
+      .verse-grid { grid-template-columns: 1fr; }
+      .sun-window { width: min(75vw, 19rem); margin-left: auto; }
+      .chapter-label { top: 2.5rem; }
+      .eyes-orbit { width: 92vw; }
+      .question-answer { grid-template-columns: 1fr; margin-top: 5rem; }
+      .question-answer p:last-child { text-align: left; }
+      .alley-path { width: 75vw; }
+      .dream-note { display: none; }
+      .freedom-lines { flex-direction: column; }
+      .freedom-lines p:last-child { text-align: left; }
+      .credit { align-items: flex-start; flex-direction: column; }
+      .finale { min-height: 180svh; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      #word-canvas { display: none; }
+      .hero-title { color: rgba(232, 238, 230, 0.7); }
+      .question-line span { width: 100%; }
+      .freedom-tide { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#story">跳到歌词正文</a>
+
+  <header class="topbar">
+    <div class="brand" aria-label="五月天 温柔">
+      <span class="brand-mark"></span>
+      <span>Mayday · Tenderness</span>
+    </div>
+    <button class="sound-toggle" type="button" aria-pressed="false" aria-label="开启环境声景">
+      <span class="sound-meter" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="sound-label">听见</span>
+    </button>
+    <span class="scene-live" aria-live="polite" aria-atomic="true"></span>
+  </header>
+
+  <nav class="chapter-nav" aria-label="章节导航">
+    <span class="chapter-nav-progress" aria-hidden="true"></span>
+    <ol class="chapter-nav-list">
+      <li><a href="#top" aria-label="序：风起" aria-current="true"><span class="chapter-nav-text">序 · 风起</span></a></li>
+      <li><a href="#sunlight" aria-label="壹：阳光忽然变轻"><span class="chapter-nav-text">壹 · 阳光</span></a></li>
+      <li><a href="#distance" aria-label="贰：你眼里的远方"><span class="chapter-nav-text">贰 · 远方</span></a></li>
+      <li><a href="#questions" aria-label="叁：心里的三个问号"><span class="chapter-nav-text">叁 · 追问</span></a></li>
+      <li><a href="#alley" aria-label="肆：又到巷子口"><span class="chapter-nav-text">肆 · 巷口</span></a></li>
+      <li><a href="#daybreak" aria-label="伍：天亮以后"><span class="chapter-nav-text">伍 · 天光</span></a></li>
+    </ol>
+  </nav>
+
+  <section class="hero" id="top" data-scene="wind" aria-labelledby="hero-title">
+    <canvas id="word-canvas" aria-hidden="true"></canvas>
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <p class="eyebrow">一封没有寄出的放手信</p>
+        <p class="intro">有一种温柔，不是把你留在身边。<br>是看懂你的沉默以后，仍替你打开门。</p>
+      </div>
+      <h1 class="hero-title" id="hero-title" aria-label="温柔"><span>温</span><span>柔</span></h1>
+    </div>
+    <div class="scroll-cue" aria-hidden="true"><i></i><span>顺着风往下</span></div>
+  </section>
+
+  <main id="story">
+    <section class="chapter opening" id="sunlight" data-scene="sunlight" aria-labelledby="chapter-one">
+      <div class="chapter-label"><b>壹</b><span id="chapter-one">阳光忽然变轻</span></div>
+      <div class="verse-grid">
+        <div class="sun-window reveal" aria-hidden="true"><span class="sun-glyph">风</span></div>
+        <div class="lyrics">
+          <p>走在风中今天阳光，突然好<em>温柔</em></p>
+          <p>天的温柔地的温柔，像你抱着我</p>
+          <p>然后发现你的改变，孤单的今后</p>
+          <p>如果冷，该怎么渡过</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter eyes" id="distance" data-scene="tide" aria-labelledby="chapter-two">
+      <div class="chapter-label"><b>贰</b><span id="chapter-two">你眼里的远方</span></div>
+      <div class="eyes-orbit" aria-hidden="true"></div>
+      <div class="eyes-copy reveal">
+        <p>天边风光，身边的我</p>
+        <p>都不在你眼中</p>
+        <p>你的眼中藏着什么</p>
+        <p>我从来都不懂</p>
+        <p class="small">没有关系，你的世界就让你拥有<br><strong>不打扰，是我的温柔</strong></p>
+      </div>
+    </section>
+
+    <section class="chapter question" id="questions" data-scene="hush" aria-labelledby="chapter-three">
+      <div class="chapter-label"><b>叁</b><span id="chapter-three">心里的三个问号</span></div>
+      <div class="question-stack">
+        <p class="question-line">不知道<span aria-hidden="true">不知道</span></p>
+        <p class="question-line">不明了<span aria-hidden="true">不明了</span></p>
+        <p class="question-line">不想要<span aria-hidden="true">不想要</span></p>
+        <div class="question-answer reveal">
+          <p>为什么我的心<br>明明是想靠近<br>却孤单到黎明</p>
+          <p>那爱情的绮丽<br>总是在孤单里<br>再把我最好的爱给你</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter alley" id="alley" data-scene="night" aria-labelledby="chapter-four">
+      <div class="chapter-label"><b>肆</b><span id="chapter-four">又到巷子口</span></div>
+      <div class="alley-path" aria-hidden="true"></div>
+      <div class="alley-content">
+        <div class="lyrics">
+          <p>不知不觉不情不愿，又到巷子口</p>
+          <p>我没有哭也没有笑，因为这是梦</p>
+          <p>没有预兆没有理由，你真的有说过</p>
+          <p>如果有，<em>就让你自由</em></p>
+        </div>
+        <div class="dream-note" aria-hidden="true">梦醒</div>
+      </div>
+    </section>
+
+    <section class="freedom-stage" data-scene="open-sea" aria-label="给你自由">
+      <div class="freedom-sticky">
+        <div class="freedom-tide" aria-hidden="true"></div>
+        <p class="freedom-kicker">THE BRAVEST FORM OF TENDERNESS</p>
+        <h2 class="freedom-word">自由</h2>
+        <div class="freedom-lines">
+          <p>我给你自由　我给你自由<br>我给你全部、全部、全部自由</p>
+          <p>这是我的温柔<br>让你立刻自由</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter finale" id="daybreak" data-scene="daybreak" aria-labelledby="chapter-five">
+      <div class="chapter-label"><b>伍</b><span id="chapter-five">天亮以后</span></div>
+      <div class="finale-wrap">
+        <div class="lyrics">
+          <p>不知道不明了不想要，为什么我的心</p>
+          <p>明明是想靠近，却孤单到黎明</p>
+          <p>不知道不明了不想要，为什么我的心</p>
+          <p>那爱情的绮丽，总是在孤单里</p>
+          <p>再把我的最好的爱给你</p>
+          <p>不知不觉不情不愿，又到巷子口</p>
+          <p>我没有哭也没有笑，因为这是梦</p>
+          <p>没有预兆没有理由，你真的有说过</p>
+        </div>
+
+        <div class="final-chorus reveal">
+          <p>如果有，就让你</p>
+          <p class="last-word">自由</p>
+          <p>这是我的温柔　这是我的温柔</p>
+          <p>这是我的温柔　这是我的</p>
+          <p class="release">温柔。就让你自由。</p>
+        </div>
+
+        <footer class="credit">
+          <p>五月天《温柔》<br>一次关于靠近与放手的文字体验</p>
+          <a class="back-top" href="#top">回到风起的地方 ↑</a>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const soundButton = document.querySelector('.sound-toggle');
+      const soundLabel = soundButton.querySelector('.sound-label');
+      const sceneLive = document.querySelector('.scene-live');
+      const chapterNav = document.querySelector('.chapter-nav');
+      const navLinks = [...document.querySelectorAll('.chapter-nav a')];
+      const sceneSections = [...document.querySelectorAll('[data-scene]')];
+      const sunWindow = document.querySelector('.sun-window');
+      const freedomStage = document.querySelector('.freedom-stage');
+      const freedomWord = document.querySelector('.freedom-word');
+      const questionLines = [...document.querySelectorAll('.question-line')];
+      const clamp = (n, min = 0, max = 1) => Math.min(max, Math.max(min, n));
+
+      const scenes = {
+        wind:      { label: '风声', nav: '#top',       wind: 0.78, tide: 0.04, sun: 0.03 },
+        sunlight:  { label: '晨光', nav: '#sunlight',  wind: 0.32, tide: 0.10, sun: 0.78 },
+        tide:      { label: '潮汐', nav: '#distance',  wind: 0.14, tide: 0.58, sun: 0.05 },
+        hush:      { label: '静夜', nav: '#questions', wind: 0.10, tide: 0.20, sun: 0.00 },
+        night:     { label: '夜风', nav: '#alley',     wind: 0.48, tide: 0.07, sun: 0.00 },
+        'open-sea':{ label: '海阔', nav: '#alley',     wind: 0.24, tide: 0.86, sun: 0.18 },
+        daybreak:  { label: '天光', nav: '#daybreak',  wind: 0.05, tide: 0.18, sun: 0.82 }
+      };
+
+      let activeScene = 'wind';
+      let soundscape = null;
+      let wind = false;
+
+      function setActiveScene(name) {
+        if (!scenes[name]) return;
+        const changed = activeScene !== name;
+        activeScene = name;
+        soundscape?.setScene(name);
+
+        const target = scenes[name].nav;
+        navLinks.forEach((link) => {
+          if (link.getAttribute('href') === target) link.setAttribute('aria-current', 'true');
+          else link.removeAttribute('aria-current');
+        });
+
+        if (changed && soundscape?.enabled) {
+          soundLabel.textContent = scenes[name].label;
+          soundButton.setAttribute('aria-label', `关闭环境声景，当前：${scenes[name].label}`);
+          sceneLive.textContent = `当前声景：${scenes[name].label}`;
+        }
+      }
+
+      function onScroll() {
+        const max = document.documentElement.scrollHeight - innerHeight;
+        const pageProgress = max > 0 ? scrollY / max : 0;
+        chapterNav.style.setProperty('--page-progress', `${pageProgress * 100}%`);
+
+        let current = sceneSections[0];
+        const marker = innerHeight * 0.48;
+        for (const section of sceneSections) {
+          if (section.getBoundingClientRect().top <= marker) current = section;
+          else break;
+        }
+        setActiveScene(current.dataset.scene);
+
+        if (sunWindow) {
+          const rect = sunWindow.getBoundingClientRect();
+          const local = clamp((innerHeight - rect.top) / (innerHeight + rect.height));
+          sunWindow.style.setProperty('--sun-shift', `${(local - 0.5) * 38}px`);
+        }
+
+        questionLines.forEach((line, index) => {
+          const rect = line.getBoundingClientRect();
+          const local = clamp((innerHeight * 0.82 - rect.top) / (innerHeight * 0.5));
+          line.style.setProperty('--reveal', `${local * 100}%`);
+          line.style.transform = `translateX(${(1 - local) * (index % 2 ? 4 : -4)}vw)`;
+        });
+
+        if (freedomStage && freedomWord) {
+          const rect = freedomStage.getBoundingClientRect();
+          const distance = freedomStage.offsetHeight - innerHeight;
+          const local = clamp(-rect.top / distance);
+          const eased = 1 - Math.pow(1 - local, 3);
+          freedomWord.style.setProperty('--freedom-space', `${-0.08 + eased * 0.95}em`);
+          freedomWord.style.setProperty('--freedom-scale', `${1 + eased * 0.18}`);
+          freedomWord.style.setProperty('--freedom-opacity', `${1 - clamp((local - 0.8) / 0.2) * 0.86}`);
+        }
+      }
+
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add('is-visible');
+        });
+      }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+
+      document.querySelectorAll('.reveal, .lyrics p').forEach((el) => revealObserver.observe(el));
+      addEventListener('scroll', onScroll, { passive: true });
+      addEventListener('resize', onScroll, { passive: true });
+
+      // Canvas typography: tiny points gather into 温柔, then yield to the visitor's movement.
+      const canvas = document.getElementById('word-canvas');
+      const ctx = canvas.getContext('2d', { alpha: true });
+      let particles = [];
+      let mouse = { x: -9999, y: -9999 };
+
+      function buildType() {
+        if (reduceMotion) return;
+        const ratio = Math.min(devicePixelRatio || 1, 2);
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        canvas.width = Math.floor(w * ratio);
+        canvas.height = Math.floor(h * ratio);
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+        const sample = document.createElement('canvas');
+        sample.width = Math.max(1, Math.floor(w / 4));
+        sample.height = Math.max(1, Math.floor(h / 4));
+        const sctx = sample.getContext('2d');
+        const size = Math.min(sample.width * 0.58, sample.height * 0.31);
+        sctx.fillStyle = '#fff';
+        sctx.font = `400 ${size}px "Songti SC", "STSong", serif`;
+        sctx.textAlign = 'right';
+        sctx.textBaseline = 'middle';
+        sctx.fillText('温柔', sample.width * 0.96, sample.height * 0.46);
+
+        const data = sctx.getImageData(0, 0, sample.width, sample.height).data;
+        const next = [];
+        for (let y = 0; y < sample.height; y += 2) {
+          for (let x = 0; x < sample.width; x += 2) {
+            if (data[(y * sample.width + x) * 4 + 3] > 100 && Math.random() > 0.2) {
+              next.push({ x: Math.random() * w, y: Math.random() * h, tx: x * 4, ty: y * 4,
+                vx: 0, vy: 0, r: Math.random() * 1.15 + 0.35, phase: Math.random() * Math.PI * 2 });
+            }
+          }
+        }
+        particles = next.slice(0, w < 700 ? 1500 : 3500);
+      }
+
+      function draw(time = 0) {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        ctx.clearRect(0, 0, w, h);
+        const heroRect = canvas.getBoundingClientRect();
+        const heroAway = clamp(-heroRect.top / Math.max(1, heroRect.height * 0.85));
+
+        for (const p of particles) {
+          const dx = mouse.x - p.x;
+          const dy = mouse.y - p.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < 13000) {
+            const force = (13000 - d2) / 13000;
+            const angle = Math.atan2(dy, dx);
+            p.vx -= Math.cos(angle) * force * 1.6;
+            p.vy -= Math.sin(angle) * force * 1.6;
+          }
+          const breeze = Math.sin(time * 0.0014 + p.phase + p.y * 0.012) * (wind ? 0.09 : 0.025);
+          p.vx += (p.tx - p.x) * (0.022 - heroAway * 0.018) + breeze + heroAway * 0.24;
+          p.vy += (p.ty - p.y) * (0.022 - heroAway * 0.018) + Math.cos(time * 0.001 + p.phase) * 0.014;
+          p.vx *= 0.9;
+          p.vy *= 0.9;
+          p.x += p.vx;
+          p.y += p.vy;
+          const alpha = Math.max(0.06, 0.55 - heroAway * 0.36 + Math.sin(p.phase + time * 0.002) * 0.09);
+          ctx.beginPath();
+          ctx.fillStyle = p.phase > Math.PI * 1.65 ? `rgba(239,195,122,${alpha})` : `rgba(232,238,230,${alpha})`;
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+
+      let resizeTimer;
+      addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(buildType, 180);
+      }, { passive: true });
+      addEventListener('pointermove', (event) => { mouse.x = event.clientX; mouse.y = event.clientY; }, { passive: true });
+      addEventListener('pointerleave', () => { mouse = { x: -9999, y: -9999 }; });
+
+      if (!reduceMotion) {
+        buildType();
+        draw();
+      }
+
+      class Soundscape {
+        constructor() {
+          this.context = null;
+          this.enabled = false;
+          this.visible = !document.hidden;
+          this.scene = activeScene;
+          this.chimeTimer = null;
+          this.levelData = null;
+        }
+
+        createPinkNoise() {
+          const length = this.context.sampleRate * 4;
+          const buffer = this.context.createBuffer(1, length, this.context.sampleRate);
+          const data = buffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+          for (let i = 0; i < length; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.055;
+            b6 = white * 0.115926;
+          }
+          return buffer;
+        }
+
+        init() {
+          if (this.context) return;
+          const AudioCtor = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtor) throw new Error('AudioContext is not supported');
+          this.context = new AudioCtor();
+
+          this.master = this.context.createGain();
+          this.master.gain.value = 0;
+          this.compressor = this.context.createDynamicsCompressor();
+          this.compressor.threshold.value = -24;
+          this.compressor.knee.value = 18;
+          this.compressor.ratio.value = 4;
+          this.compressor.attack.value = 0.03;
+          this.compressor.release.value = 0.28;
+          this.analyser = this.context.createAnalyser();
+          this.analyser.fftSize = 256;
+          this.analyser.smoothingTimeConstant = 0.82;
+          this.levelData = new Uint8Array(this.analyser.fftSize);
+          this.master.connect(this.compressor).connect(this.analyser).connect(this.context.destination);
+
+          const noise = this.createPinkNoise();
+
+          this.windSource = this.context.createBufferSource();
+          this.windSource.buffer = noise;
+          this.windSource.loop = true;
+          this.windFilter = this.context.createBiquadFilter();
+          this.windFilter.type = 'bandpass';
+          this.windFilter.frequency.value = 430;
+          this.windFilter.Q.value = 0.55;
+          this.windGain = this.context.createGain();
+          this.windGain.gain.value = 0;
+          const windLfo = this.context.createOscillator();
+          const windLfoGain = this.context.createGain();
+          windLfo.frequency.value = 0.07;
+          windLfoGain.gain.value = 120;
+          windLfo.connect(windLfoGain).connect(this.windFilter.frequency);
+          this.windSource.connect(this.windFilter).connect(this.windGain).connect(this.master);
+
+          this.tideSource = this.context.createBufferSource();
+          this.tideSource.buffer = noise;
+          this.tideSource.loop = true;
+          this.tideFilter = this.context.createBiquadFilter();
+          this.tideFilter.type = 'lowpass';
+          this.tideFilter.frequency.value = 820;
+          this.tideMotion = this.context.createGain();
+          this.tideMotion.gain.value = 0.62;
+          this.tideGain = this.context.createGain();
+          this.tideGain.gain.value = 0;
+          const tideLfo = this.context.createOscillator();
+          const tideLfoGain = this.context.createGain();
+          tideLfo.frequency.value = 0.085;
+          tideLfoGain.gain.value = 0.24;
+          tideLfo.connect(tideLfoGain).connect(this.tideMotion.gain);
+          const foamLfo = this.context.createOscillator();
+          const foamLfoGain = this.context.createGain();
+          foamLfo.frequency.value = 0.13;
+          foamLfoGain.gain.value = 260;
+          foamLfo.connect(foamLfoGain).connect(this.tideFilter.frequency);
+          this.tideSource.connect(this.tideFilter).connect(this.tideMotion).connect(this.tideGain).connect(this.master);
+
+          this.sunFilter = this.context.createBiquadFilter();
+          this.sunFilter.type = 'lowpass';
+          this.sunFilter.frequency.value = 1900;
+          this.sunGain = this.context.createGain();
+          this.sunGain.gain.value = 0;
+          this.sunFilter.connect(this.sunGain).connect(this.master);
+
+          [this.windSource, windLfo, this.tideSource, tideLfo, foamLfo].forEach((node) => node.start());
+        }
+
+        async enable() {
+          this.init();
+          await this.context.resume();
+          this.enabled = true;
+          wind = true;
+          const now = this.context.currentTime;
+          this.master.gain.cancelScheduledValues(now);
+          this.master.gain.setTargetAtTime(this.visible ? 0.14 : 0, now, 0.42);
+          this.applyScene();
+          this.scheduleChime(1100);
+        }
+
+        disable() {
+          this.enabled = false;
+          wind = false;
+          clearTimeout(this.chimeTimer);
+          this.chimeTimer = null;
+          if (!this.context) return;
+          const now = this.context.currentTime;
+          this.master.gain.cancelScheduledValues(now);
+          this.master.gain.setTargetAtTime(0, now, 0.18);
+        }
+
+        setScene(name) {
+          if (!scenes[name]) return;
+          this.scene = name;
+          if (this.context && this.enabled) this.applyScene();
+        }
+
+        applyScene() {
+          if (!this.context) return;
+          const weights = scenes[this.scene];
+          const now = this.context.currentTime;
+          this.windGain.gain.cancelScheduledValues(now);
+          this.tideGain.gain.cancelScheduledValues(now);
+          this.sunGain.gain.cancelScheduledValues(now);
+          this.windGain.gain.setTargetAtTime(weights.wind * 0.34, now, 0.54);
+          this.tideGain.gain.setTargetAtTime(weights.tide * 0.38, now, 0.54);
+          this.sunGain.gain.setTargetAtTime(weights.sun * 0.44, now, 0.54);
+          const tideStrength = this.enabled ? weights.tide : 0;
+          document.documentElement.style.setProperty('--tide-opacity', String(0.08 + tideStrength * 0.18));
+          document.documentElement.style.setProperty('--tide-shift', `${-tideStrength * 0.8}rem`);
+          if (weights.sun > 0.15 && !this.chimeTimer) this.scheduleChime(900);
+          if (weights.sun <= 0.15) {
+            clearTimeout(this.chimeTimer);
+            this.chimeTimer = null;
+          }
+        }
+
+        playChime() {
+          if (!this.enabled || !this.visible || !this.context || scenes[this.scene].sun <= 0.15) return;
+          const now = this.context.currentTime;
+          const notes = [392, 523.25, 659.25];
+          notes.forEach((frequency, index) => {
+            const oscillator = this.context.createOscillator();
+            const voice = this.context.createGain();
+            oscillator.type = index === 1 ? 'triangle' : 'sine';
+            oscillator.frequency.value = frequency;
+            const start = now + index * 0.14;
+            voice.gain.setValueAtTime(0.0001, start);
+            voice.gain.exponentialRampToValueAtTime(index === 1 ? 0.08 : 0.055, start + 0.06);
+            voice.gain.exponentialRampToValueAtTime(0.0001, start + 1.75);
+            oscillator.connect(voice).connect(this.sunFilter);
+            oscillator.start(start);
+            oscillator.stop(start + 1.85);
+          });
+          if (!reduceMotion) {
+            document.documentElement.style.setProperty('--sun-glow', '2.2rem');
+            setTimeout(() => document.documentElement.style.setProperty('--sun-glow', '0rem'), 420);
+          }
+        }
+
+        scheduleChime(delay = 4000 + Math.random() * 3000) {
+          clearTimeout(this.chimeTimer);
+          if (!this.enabled || !this.visible || scenes[this.scene].sun <= 0.15) {
+            this.chimeTimer = null;
+            return;
+          }
+          this.chimeTimer = setTimeout(() => {
+            this.chimeTimer = null;
+            this.playChime();
+            this.scheduleChime();
+          }, delay);
+        }
+
+        setVisibility(visible) {
+          this.visible = visible;
+          if (!this.context || !this.enabled) return;
+          clearTimeout(this.chimeTimer);
+          this.chimeTimer = null;
+          const now = this.context.currentTime;
+          this.master.gain.cancelScheduledValues(now);
+          this.master.gain.setTargetAtTime(visible ? 0.14 : 0, now, 0.18);
+          if (visible) {
+            this.context.resume().catch(() => {});
+            this.applyScene();
+            this.scheduleChime(1500);
+          }
+        }
+
+        level() {
+          if (!this.enabled || !this.analyser || reduceMotion) return this.enabled ? 0.45 : 0;
+          this.analyser.getByteTimeDomainData(this.levelData);
+          let sum = 0;
+          for (const sample of this.levelData) {
+            const value = (sample - 128) / 128;
+            sum += value * value;
+          }
+          return clamp(Math.sqrt(sum / this.levelData.length) * 9.5);
+        }
+      }
+
+      soundscape = new Soundscape();
+
+      function updateMeter() {
+        const level = soundscape.level();
+        soundButton.style.setProperty('--bar-one', `${(0.65 + level * 0.75).toFixed(3)}rem`);
+        soundButton.style.setProperty('--bar-two', `${(1 + level * 0.8).toFixed(3)}rem`);
+        soundButton.style.setProperty('--bar-three', `${(0.45 + level * 0.75).toFixed(3)}rem`);
+        requestAnimationFrame(updateMeter);
+      }
+
+      soundButton.addEventListener('click', async () => {
+        if (soundscape.enabled) {
+          soundscape.disable();
+          soundButton.setAttribute('aria-pressed', 'false');
+          soundButton.setAttribute('aria-label', '开启环境声景');
+          soundLabel.textContent = '听见';
+          sceneLive.textContent = '环境声景已关闭';
+          document.documentElement.style.setProperty('--tide-opacity', '0.08');
+          document.documentElement.style.setProperty('--tide-shift', '0rem');
+          return;
+        }
+        try {
+          await soundscape.enable();
+          const label = scenes[activeScene].label;
+          soundButton.setAttribute('aria-pressed', 'true');
+          soundButton.setAttribute('aria-label', `关闭环境声景，当前：${label}`);
+          soundLabel.textContent = label;
+          sceneLive.textContent = `环境声景已开启：${label}`;
+        } catch (_) {
+          soundButton.disabled = true;
+          soundLabel.textContent = '无声';
+          soundButton.setAttribute('aria-label', '此浏览器不支持环境声景');
+          sceneLive.textContent = '此浏览器不支持环境声景';
+        }
+      });
+
+      document.addEventListener('visibilitychange', () => soundscape.setVisibility(!document.hidden));
+      onScroll();
+      updateMeter();
+    })();
+  </script>
+</body>
+</html>
