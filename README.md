@@ -47,3 +47,7 @@ HTML、CSS、JavaScript、Canvas、Web Audio API、Intersection Observer。
 ## 版权说明
 
 这是一个非官方、非商业的视觉创作与前端实验。歌曲及歌词的相关权利归原权利人所有。本项目不包含五月天原曲音频。
+
+## 许可
+
+本项目的原创代码与视觉设计以 [CC BY-NC 4.0](LICENSE) 授权，可在署名且非商业的前提下使用。歌曲及歌词不在授权范围内，相关权利归原权利人所有。
